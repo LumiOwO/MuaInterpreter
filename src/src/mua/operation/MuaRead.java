@@ -1,0 +1,28 @@
+package src.mua.operation;
+
+import java.util.Scanner;
+
+import src.mua.Main;
+import src.mua.exception.MuaException;
+
+public class MuaRead extends Operation {
+
+	// read
+	
+	@Override
+	public int getRequiredArgNum() {
+		return 0;
+	}
+
+	@Override
+	public Object execute() throws MuaException {
+		@SuppressWarnings("resource")
+		Scanner in = Main.std_in;
+		
+		if(in.hasNext())
+			return in.next();
+		else
+			throw new MuaException.EmptyInput();
+	}
+
+}

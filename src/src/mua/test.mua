@@ -1,0 +1,14 @@
+make "a 6
+print :a
+make "b "a
+print thing :b
+make "c mul add :a 13 :a
+print sub :c "6
+make "d read
+1234
+print isname "d
+print :d
+make "x eq :d 1234
+print :x
+erase "d
+print not isname "d
