@@ -6,15 +6,14 @@ import java.util.Iterator;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
-@SuppressWarnings("serial")
 public class MuaFunction extends Operation {
 
 	private ArrayList<String> argsName = new ArrayList<String>();
 	private ArrayList<Operation> steps = new ArrayList<Operation>();
 	
-	public MuaFunction(ArrayList<Object> argsName, ArrayList<Object> steps) throws MuaException {
+	public MuaFunction(Object argsName, Object steps) throws MuaException {
 		
-		Iterator<Object> iter = argsName.iterator();
+		Iterator<Object> iter = toList(argsName).iterator();
 		while(iter.hasNext()) {
 			try {
 				String name = toString(iter.next());
@@ -24,7 +23,7 @@ public class MuaFunction extends Operation {
 			}
 		}
 		
-		iter = steps.iterator();
+		iter = toList(steps).iterator();
 		while(iter.hasNext()) {
 			Operation op = (Operation)iter.next();
 			this.steps.add(op);

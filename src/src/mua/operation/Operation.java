@@ -1,12 +1,10 @@
 package src.mua.operation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
-public abstract class Operation implements Serializable{
+public abstract class Operation {
 	
 	public static final int INFINITY = (int)1e6;
 	

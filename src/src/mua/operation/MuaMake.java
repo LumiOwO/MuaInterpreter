@@ -6,7 +6,6 @@ import java.util.Iterator;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
-@SuppressWarnings("serial")
 public class MuaMake extends Operation {
 	
 	// make <name> <value>
@@ -45,10 +44,9 @@ public class MuaMake extends Operation {
 		return null;
 	}
 	
-	private void bindFunction(String name, ArrayList<Object> value) throws MuaException {
+	private void bindFunction(String name, ArrayList<Object> list) {
 		
-		MuaFunction func = new MuaFunction(toList(value.get(0)), toList(value.get(1)));
-		Namespace.getInstance().bind(name, func);	
+		Namespace.getInstance().bind(name, list);	
 	}
 
 	private void bindName(String name, Object value) {

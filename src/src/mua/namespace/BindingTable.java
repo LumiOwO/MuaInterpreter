@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import src.mua.exception.MuaException;
 import src.mua.operation.MuaFunction;
 
 public class BindingTable {
@@ -13,14 +15,14 @@ public class BindingTable {
 	// variable name: " " + string
 	
 	private HashMap<String, Object> nameTable = new HashMap<String, Object>();
-	private HashMap<String, MuaFunction> funcTable = new HashMap<String, MuaFunction>();
+	private HashMap<String, ArrayList<Object>> funcTable = new HashMap<String, ArrayList<Object>>();
 	
 	public void bind(String name, Object value) {
 		nameTable.put(name, value);
 	}
 	
-	public void bind(String name, MuaFunction func) {
-		funcTable.put(name, func);
+	public void bind(String name, ArrayList<Object> list) {
+		funcTable.put(name, list);
 	}
 	
 	public void eraseName(String name) {
@@ -35,21 +37,28 @@ public class BindingTable {
 		return nameTable.get(name);
 	}
 	
-	public MuaFunction getFunction(String name) {
-		return cloneFunc(funcTable.get(name));
+	public MuaFunction getFunction(String name) throws MuaException {
+		
+		ArrayList<Object> list = cloneList(funcTable.get(name));
+		MuaFunction ret = null;
+		if(list != null)
+			ret = new MuaFunction(list.get(0), list.get(1));
+		
+		return ret;
 	}
 
-	private MuaFunction cloneFunc(MuaFunction muaFunction) {
+	@SuppressWarnings("unchecked")
+	private ArrayList<Object> cloneList(ArrayList<Object> list) {
 		
-		MuaFunction ret = null;
-		if(muaFunction != null) try {
+		ArrayList<Object> ret = null;
+		if(list != null) try {
 			ByteArrayOutputStream out_byte = new ByteArrayOutputStream();
 			ObjectOutputStream out_obj = new ObjectOutputStream(out_byte);
-			out_obj.writeObject(muaFunction);
+			out_obj.writeObject(list);
  
 			ByteArrayInputStream in_byte = new ByteArrayInputStream(out_byte.toByteArray());
 			ObjectInputStream in_obj = new ObjectInputStream(in_byte);
-			ret = (MuaFunction) in_obj.readObject();
+			ret = (ArrayList<Object>) in_obj.readObject();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

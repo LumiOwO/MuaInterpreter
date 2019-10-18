@@ -1,8 +1,10 @@
 package src.mua.namespace;
 
+import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Stack;
 
+import src.mua.exception.MuaException;
 import src.mua.operation.MuaFunction;
 
 public class Namespace {
@@ -27,8 +29,8 @@ public class Namespace {
 		return instance;
 	}
 
-	public void bind(String name, MuaFunction func){
-		curScope.bind(name, func);
+	public void bind(String name, ArrayList<Object> list){
+		curScope.bind(name, list);
 	}
 	
 	public void bind(String name, Object value) {
@@ -52,7 +54,7 @@ public class Namespace {
 		return ret;
 	}
 	
-	public MuaFunction getFunction(String name) {
+	public MuaFunction getFunction(String name) throws MuaException {
 		
 		MuaFunction ret = null;
 		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
