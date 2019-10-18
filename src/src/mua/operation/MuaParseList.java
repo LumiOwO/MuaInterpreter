@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaParseList extends Operation {
 
 	// use for parse list

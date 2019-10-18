@@ -1,10 +1,17 @@
 package src.mua.operation;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import src.mua.exception.MuaException;
 
-public abstract class Operation {
+@SuppressWarnings("serial")
+public abstract class Operation implements Serializable{
 	
 	public static final int INFINITY = (int)1e6;
 	
@@ -122,5 +129,51 @@ public abstract class Operation {
 			throw new MuaException.Compare();
 		
 		return res;
+	}
+	
+	public static boolean allWord(ArrayList<Object> list) {
+		boolean ret = true;
+		Iterator<Object> iter = list.iterator();
+		while(ret && iter.hasNext()) {
+			ret = ret && iter.next() instanceof String;
+		}
+		return ret;
+	}
+
+	public static boolean existOp(ArrayList<Object> list) {
+		boolean ret = false;
+		Iterator<Object> iter = list.iterator();
+		while(!ret && iter.hasNext()) {
+			ret = ret || iter.next() instanceof Operation;
+		}
+		return ret;
+	}
+	
+	public static boolean allOp(ArrayList<Object> list) {
+		boolean ret = true;
+		Iterator<Object> iter = list.iterator();
+		while(ret && iter.hasNext()) {
+			ret = ret && iter.next() instanceof Operation;
+		}
+		return ret;
+	}
+	
+	public static Operation clone(Operation op) {
+		
+		Operation ret = null;
+		try {
+			ByteArrayOutputStream out_byte = new ByteArrayOutputStream();
+			ObjectOutputStream out_obj = new ObjectOutputStream(out_byte);
+			out_obj.writeObject(op);
+ 
+			ByteArrayInputStream in_byte = new ByteArrayInputStream(out_byte.toByteArray());
+			ObjectInputStream in_obj = new ObjectInputStream(in_byte);
+			ret = (Operation) in_obj.readObject();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
+		
+		return ret;
 	}
 }

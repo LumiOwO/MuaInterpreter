@@ -57,6 +57,11 @@ public class OpFactory {
 		else if(name.equals("export"))
 			op = new MuaExport();
 		
+		else if(name.equals("repeat"))
+			op = new MuaRepeat();
+		else if(name.equals("if"))
+			op = new MuaIf();
+		
 		else if(name.equals("quit"))
 			op = new MuaQuit();
 		

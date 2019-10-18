@@ -1,28 +1,19 @@
 package src.mua.operation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
+import src.mua.parser.Parser;
 
+@SuppressWarnings("serial")
 public class MuaMake extends Operation {
 	
 	// make <name> <value>
-
+	
 	@Override
 	public int getRequiredArgNum() {
 		return 2;
-	}
-
-	@Override
-	protected Object exec_leaf() throws MuaException {
-		
-		String name = toString(getArgValueAt(0));
-		Object value = getArgValueAt(1);
-		bindName(name, value);
-		
-		return null;
 	}
 	
 	@Override
@@ -38,8 +29,21 @@ public class MuaMake extends Operation {
 			bindFunction(name, toList(value));
 		} else {
 //			System.out.println("name");
+			if(value instanceof ArrayList)
+				value = new Parser().compactList(toList(value));
+			
 			super.execute();
 		}
+		
+		return null;
+	}
+	
+	@Override
+	protected Object exec_leaf() throws MuaException {
+		
+		String name = toString(getArgValueAt(0));
+		Object value = getArgValueAt(1);
+		bindName(name, value);
 		
 		return null;
 	}
@@ -87,19 +91,18 @@ public class MuaMake extends Operation {
 			else if(!( (list.get(0) instanceof ArrayList) && (list.get(1) instanceof ArrayList) ))
 				ret = false;
 			else {
-				Iterator<Object> iter = toList(list.get(1)).iterator();
-				ret = iter.hasNext()? (iter.next() instanceof Operation): true;
-				
-				if(iter.hasNext()) {
-					boolean allOp = true;
-					while(allOp && iter.hasNext()) {
-						allOp = allOp && (iter.next() instanceof Operation);
-					}
+				ArrayList<Object> argNames = toList(list.get(0));
+				ArrayList<Object> steps = toList(list.get(1));
+				if(!allWord(argNames))
+					ret = false;
+				else if(!existOp(steps))
+					ret = false;
+				else {
+					String funcName = toString(getArgValueAt(0));
+					steps = new Parser().compactList(steps, funcName, argNames);
+					list.set(1, steps);
 					
-					if(!allOp)
-						throw new MuaException.FuncDefine();
-					else if(!ret)
-						throw new MuaException.FuncDefine();
+					ret = allOp(steps);
 				}
 			}
 		}

@@ -2,12 +2,15 @@ package src.mua.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Scanner;
 import java.util.Stack;
 
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
+import src.mua.operation.MuaFunction;
 import src.mua.operation.MuaParseList;
 import src.mua.operation.OpFactory;
 import src.mua.operation.Operation;
@@ -114,18 +117,26 @@ public class Parser{
 
 	private void parseName(String string) throws MuaException {
 		
-		Operation op = Namespace.getInstance().getFunction(string);
+		Operation op = OpFactory.getOpByName(string);
 		if(op == null)
-			op = OpFactory.getOpByName(string);
+			op = Namespace.getInstance().getFunction(string);
 		
-		if(op != null) {
+		if(isParsingList()) {
+			if(op == null) op = new MuaFunction(string);
+			addArgToTop(op);
+			
+		} else if(op != null) {
 			opStack.push(op);
 		} else {
 			throw new MuaException.OpNotSupport();
 		}
 	}
 	
-	private String chopListToken(String string) {
+	private boolean isParsingList() {
+		return inProcess() && opStack.peek() instanceof MuaParseList;
+	}
+
+	private String chopListToken(String string) throws MuaException {
 		
 		ListIterator<Operation> iter = opStack.listIterator(opStack.size());
 		
@@ -141,11 +152,65 @@ public class Parser{
 				Operation op = iter.previous();
 				if(op instanceof MuaParseList) {
 					((MuaParseList)op).setListFull(idx != 0);
+					idx ++;
 					break;
 				}
 			}
-			idx ++;
 		}
+		
+		if(idx < str_len && !iter.hasPrevious())
+			throw new MuaException.ListToken();
+		
+		return ret;
+	}
+
+	public ArrayList<Object> compactList(ArrayList<Object> list) throws MuaException {
+		return compactList(list, null, null);
+	}
+	
+	public ArrayList<Object> compactList(ArrayList<Object> list, 
+										String funcName, 
+										Object argNames) throws MuaException {
+		ArrayList<Object> ret = new ArrayList<Object>();
+		
+		Iterator<Object> iter = list.iterator();
+		while(iter.hasNext()) {
+			Object obj = iter.next();
+			
+			if(obj instanceof MuaFunction) {
+				String name = ((MuaFunction)obj).getFuncName();
+				MuaFunction func = Namespace.getInstance().getFunction(name);
+				if(func == null && funcName != null && name.equals(funcName)) {
+					func = (MuaFunction)obj;
+					func.setArgsName(argNames);
+				}
+				
+				if(func != null)
+					opStack.push(func);
+				else
+					throw new MuaException.OpNotSupport();
+				
+			} else if(obj instanceof Operation) {
+				opStack.push((Operation)obj);
+			} else if(inProcess()) {
+				addArgToTop(obj);
+			} else {
+				ret.add(obj);
+			}
+			
+			while(inProcess() && opStack.peek().fullOfArgs()) {
+				Operation op = opStack.pop();
+				
+				if(inProcess()) {
+					addArgToTop(op);
+				} else {
+					ret.add(op);
+				}
+			}
+		}
+		
+		if(inProcess())
+			throw new MuaException.FuncDefine();
 		
 		return ret;
 	}

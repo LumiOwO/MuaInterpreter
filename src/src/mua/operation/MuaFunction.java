@@ -6,24 +6,32 @@ import java.util.Iterator;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
+@SuppressWarnings("serial")
 public class MuaFunction extends Operation {
 
-	private ArrayList<String> argsName = new ArrayList<String>();
+	private ArrayList<String> argNames = new ArrayList<String>();
 	private ArrayList<Operation> steps = new ArrayList<Operation>();
 	
-	public MuaFunction(Object argsName, Object steps) throws MuaException {
-		
-		Iterator<Object> iter = toList(argsName).iterator();
+	private String funcName;
+	
+	public MuaFunction(String name) {
+		funcName = name;
+	}
+	
+	public String getFuncName() {
+		return funcName;
+	}
+
+	public void setArgsName(Object argNames) throws MuaException {
+		Iterator<Object> iter = toList(argNames).iterator();
 		while(iter.hasNext()) {
-			try {
-				String name = toString(iter.next());
-				this.argsName.add(name);
-			} catch (MuaException.TypeConvert e) {
-				throw new MuaException.FuncDefine();
-			}
+			String name = toString(iter.next());
+			this.argNames.add(name);
 		}
-		
-		iter = toList(steps).iterator();
+	}
+
+	public void setSteps(Object steps) throws MuaException {
+		Iterator<Object> iter = toList(steps).iterator();
 		while(iter.hasNext()) {
 			Operation op = (Operation)iter.next();
 			this.steps.add(op);
@@ -32,16 +40,18 @@ public class MuaFunction extends Operation {
 	
 	@Override
 	public int getRequiredArgNum() {
-		return argsName.size();
+		return argNames.size();
 	}
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
 		Namespace namespace = Namespace.getInstance();
+		if(steps.isEmpty())
+			setSteps(namespace.getFunction(funcName).steps);
 		
 		namespace.enterNewScope();
 		for(int i=0; i<getRequiredArgNum(); i++) {
-			namespace.bind(argsName.get(i), getArgValueAt(i));
+			namespace.bind(argNames.get(i), getArgValueAt(i));
 		}
 		Object ret = execSteps();
 		namespace.exitCurrentScope();

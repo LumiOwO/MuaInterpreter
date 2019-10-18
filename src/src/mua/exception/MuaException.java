@@ -67,7 +67,7 @@ public abstract class MuaException extends Exception {
 
 		@Override
 		public String getErrorInfo() {
-			return "An unsupported operation was attempted.";
+			return "An unsupported operation or an unimplemented function was attempted.";
 		}
 
 		@Override
@@ -163,7 +163,55 @@ public abstract class MuaException extends Exception {
 
 		@Override
 		public String getErrorInfo() {
-			return "The function definition does not match the required format.";
+			return "Some operations do not have enough parameters.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class ListToken extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The right bracket does not match the list.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class RepeatTimes extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The repeat times is not an integer.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class ListNotFullOp extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The list to execute is not full of operations.";
 		}
 
 		@Override

@@ -41,8 +41,11 @@ public class BindingTable {
 		
 		ArrayList<Object> list = cloneList(funcTable.get(name));
 		MuaFunction ret = null;
-		if(list != null)
-			ret = new MuaFunction(list.get(0), list.get(1));
+		if(list != null) {
+			ret = new MuaFunction(name);
+			ret.setArgsName(list.get(0));
+			ret.setSteps(list.get(1));
+		}
 		
 		return ret;
 	}
