@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.Stack;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 import src.mua.operation.MuaParseList;
 import src.mua.operation.OpFactory;
 import src.mua.operation.Operation;
@@ -28,7 +29,19 @@ public class Parser{
 			parseString(scanner.next());
 			
 			while(inProcess() && opStack.peek().fullOfArgs()) {
-				execTopOp();
+				
+				Operation op = opStack.pop();
+				
+				if(op instanceof MuaParseList) {
+					addArgToTop(op.execute());
+				} else if(inProcess()) {
+					addArgToTop(op);
+				} else {
+					Object res = op.execute();
+					if(res != null) {
+						addArgToTop(res);
+					}
+				}
 			}
 		}
 	}
@@ -37,22 +50,10 @@ public class Parser{
 		return !opStack.isEmpty();
 	}
 	
-	private void execTopOp() throws MuaException {
-		
-		Operation op = opStack.pop();
-		Object res = op.execute();
-		
-		if(inProcess()) {
-			if(res != null)
-				addArgToTop(res);
-			else
-				throw new MuaException.ArgToNullOp();
-		}
-	}
-	
-	private void addArgToTop(Object arg) {
-		if(!inProcess())
+	private void addArgToTop(Object arg) throws MuaException{
+		if(!inProcess()) {
 			opStack.push(OpFactory.getOpByName("print"));
+		}
 			
 		opStack.peek().addArg(arg);
 	}
@@ -113,7 +114,10 @@ public class Parser{
 
 	private void parseName(String string) throws MuaException {
 		
-		Operation op = OpFactory.getOpByName(string);
+		Operation op = Namespace.getInstance().getFunction(string);
+		if(op == null)
+			op = OpFactory.getOpByName(string);
+		
 		if(op != null) {
 			opStack.push(op);
 		} else {

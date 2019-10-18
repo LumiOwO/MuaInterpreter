@@ -2,6 +2,7 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaGreaterThan extends Operation {
 
 	// gt <number|word> <number|word>
@@ -12,7 +13,7 @@ public class MuaGreaterThan extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		Object a = getArgValueAt(0);
 		Object b = getArgValueAt(1);
 		

@@ -2,6 +2,7 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaMod extends Operation {
 
 	// mod <number> <number>
@@ -12,7 +13,7 @@ public class MuaMod extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		double a = toDouble(getArgValueAt(0));
 		double b = toDouble(getArgValueAt(1));
 		double res = a % b;

@@ -1,14 +1,35 @@
 package src.mua.operation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
-public abstract class Operation {
+@SuppressWarnings("serial")
+public abstract class Operation implements Serializable{
 	
 	public static final int INFINITY = (int)1e6;
 	
 	private ArrayList<Object> argList = new ArrayList<Object>();
+	
+	public abstract int getRequiredArgNum();
+	protected abstract Object exec_leaf() throws MuaException;
+	
+	// execute entrance
+	public Object execute() throws MuaException {
+		for(int i=0; i<argList.size(); i++) {
+			Object nowArg = argList.get(i);
+			if(nowArg instanceof Operation) {
+				Object res = ((Operation)nowArg).execute();
+				if(res != null)
+					argList.set(i, res);
+				else
+					throw new MuaException.NullAsArg();
+			}
+		}
+		
+		return this.exec_leaf();
+	}
 	
 	public void addArg(Object arg) {
 		argList.add(arg);
@@ -25,9 +46,6 @@ public abstract class Operation {
 	public boolean fullOfArgs() {
 		return getNowArgNum() == getRequiredArgNum();
 	}
-	
-	public abstract int getRequiredArgNum();
-	public abstract Object execute() throws MuaException;
 	
 	// static utilities
 	public static Boolean toBoolean(Object value) throws MuaException {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaParseList extends Operation {
 
 	// use for parse list
@@ -15,13 +16,18 @@ public class MuaParseList extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		
 		ArrayList<Object> res = new ArrayList<Object>();
 		for(int i=0; i<getNowArgNum(); i++)
 			res.add(getArgValueAt(i));
 		
 		return res;
+	}
+	
+	@Override
+	public Object execute() throws MuaException {
+		return this.exec_leaf();
 	}
 
 	public void setListFull(boolean oneMore) {

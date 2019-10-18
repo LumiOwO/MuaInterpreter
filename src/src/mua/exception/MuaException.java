@@ -77,13 +77,13 @@ public abstract class MuaException extends Exception {
 		
 	}
 	
-	public static final class ArgToNullOp extends MuaException {
+	public static final class NullAsArg extends MuaException {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getErrorInfo() {
-			return "Argument is passing in an null operation.";
+			return "Some arguments of the operation are null values.";
 		}
 
 		@Override
@@ -140,4 +140,37 @@ public abstract class MuaException extends Exception {
 		}
 		
 	}
+	
+	public static final class ThingNullTarget extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "No target for the operation \":\".";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class FuncDefine extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The function definition does not match the required format.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
 }

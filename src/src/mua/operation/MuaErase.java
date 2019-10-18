@@ -3,6 +3,7 @@ package src.mua.operation;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
+@SuppressWarnings("serial")
 public class MuaErase extends Operation {
 
 	// erase <name>
@@ -13,7 +14,7 @@ public class MuaErase extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		String name = toString(getArgValueAt(0));
 		Namespace.getInstance().eraseName(name);
 		return null;

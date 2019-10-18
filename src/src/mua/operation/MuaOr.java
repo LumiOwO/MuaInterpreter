@@ -2,6 +2,7 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaOr extends Operation {
 
 	// or <bool> <bool>
@@ -12,7 +13,7 @@ public class MuaOr extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		boolean a = toBoolean(getArgValueAt(0));
 		boolean b = toBoolean(getArgValueAt(1));
 		boolean res = a || b;

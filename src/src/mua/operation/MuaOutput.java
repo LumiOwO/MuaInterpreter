@@ -3,21 +3,16 @@ package src.mua.operation;
 import src.mua.exception.MuaException;
 
 @SuppressWarnings("serial")
-public class MuaAdd extends Operation {
+public class MuaOutput extends Operation {
 
-	// add <number> <number>
-	
 	@Override
 	public int getRequiredArgNum() {
-		return 2;
+		return 1;
 	}
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		double a = toDouble(getArgValueAt(0));
-		double b = toDouble(getArgValueAt(1));
-		double res = a + b;
-		return res;
+		return getArgValueAt(0);
 	}
 
 }

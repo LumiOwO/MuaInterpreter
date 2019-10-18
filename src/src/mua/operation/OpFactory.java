@@ -1,21 +1,20 @@
 package src.mua.operation;
 
+import src.mua.exception.MuaException;
+
 public class OpFactory {
 	
 	private OpFactory() {}
 	
-	public static Operation getOpByName(String name){
+	public static Operation getOpByName(String name) throws MuaException{
 		
 		Operation op = null;
 		if(name.equals("make"))
 			op = new MuaMake();
 		else if(name.equals("thing"))
 			op = new MuaThing();
-		else if(name.charAt(0) == ':') {
-			op = new MuaThing();
-			if(name.length() > 1)
-				op.addArg(name.substring(1));
-		}
+		else if(name.charAt(0) == ':')
+			op = getThingForShort(name);
 		else if(name.equals("erase"))
 			op = new MuaErase();
 		else if(name.equals("isname"))
@@ -51,6 +50,13 @@ public class OpFactory {
 		else if(name.equals("not"))
 			op = new MuaNot();
 		
+		else if(name.equals("output"))
+			op = new MuaOutput();
+		else if(name.equals("stop"))
+			op = new MuaStop();
+		else if(name.equals("export"))
+			op = new MuaExport();
+		
 		else if(name.equals("quit"))
 			op = new MuaQuit();
 		
@@ -59,5 +65,34 @@ public class OpFactory {
 			op = new MuaParseList();
 		
 		return op;
+	}
+
+	private static Operation getThingForShort(String name) throws MuaException {
+		
+		Operation ret = new MuaThing();
+		
+		// deal with multi ":"
+		Operation now = ret;
+		Operation next = null;
+		int idx;
+		for(idx = 1; idx < name.length(); idx++) {
+			if(name.charAt(idx) == ':') {
+				next = new MuaThing();
+				now.addArg(next);
+				
+				now = next;
+				next = null;
+			} else {
+				break;
+			}
+		}
+		
+		if(idx < name.length()) {
+			now.addArg(name.substring(idx));
+		} else {
+			throw new MuaException.ThingNullTarget();
+		}
+		
+		return ret;
 	}
 }

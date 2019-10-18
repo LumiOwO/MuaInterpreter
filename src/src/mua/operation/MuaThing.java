@@ -3,6 +3,7 @@ package src.mua.operation;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
+@SuppressWarnings("serial")
 public class MuaThing extends Operation {
 
 	// thing <name>
@@ -14,7 +15,8 @@ public class MuaThing extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
+		
 		String name = toString(getArgValueAt(0));
 		Object value = Namespace.getInstance().valueOfName(name);
 		if(value == null)

@@ -5,6 +5,7 @@ import java.util.Scanner;
 import src.mua.Main;
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaRead extends Operation {
 
 	// read
@@ -15,7 +16,7 @@ public class MuaRead extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		@SuppressWarnings("resource")
 		Scanner in = Main.std_in;
 		

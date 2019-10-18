@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
+@SuppressWarnings("serial")
 public class MuaPrint extends Operation {
 
 	// print <value>
@@ -14,7 +15,7 @@ public class MuaPrint extends Operation {
 	}
 
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		Object value = getArgValueAt(0);
 		printResult(value);
 		return null;
@@ -26,7 +27,9 @@ public class MuaPrint extends Operation {
 	}
 	
 	private void print(Object res) throws MuaException {
-		if(res instanceof String)
+		if(res == null)
+			System.out.print("null");
+		else if(res instanceof String)
 			System.out.print(toString(res));
 		else if(res instanceof Double)
 			System.out.print(toDouble(res));
@@ -34,6 +37,8 @@ public class MuaPrint extends Operation {
 			System.out.print(toBoolean(res));
 		else if(res instanceof ArrayList)
 			print(toList(res));
+		else if(res instanceof Operation)
+			print(((Operation)res).execute());
 	}
 	
 	private void print(ArrayList<Object> res) throws MuaException {
