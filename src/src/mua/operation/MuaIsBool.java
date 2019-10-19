@@ -1,10 +1,9 @@
 package src.mua.operation;
 
 import src.mua.exception.MuaException;
-import src.mua.namespace.Namespace;
 
 @SuppressWarnings("serial")
-public class MuaOutput extends Operation {
+public class MuaIsBool extends Operation {
 
 	@Override
 	public int getRequiredArgNum() {
@@ -13,8 +12,12 @@ public class MuaOutput extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object ret = getArgValueAt(0);
-		Namespace.getInstance().setOutput(ret);
+		boolean ret = true;
+		try {
+			toBoolean(getArgValueAt(0));
+		} catch (MuaException.TypeConvert e) {
+			ret = false;
+		}
 		return ret;
 	}
 

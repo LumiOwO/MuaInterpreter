@@ -10,7 +10,7 @@ import src.mua.namespace.Namespace;
 public class MuaFunction extends Operation {
 
 	private ArrayList<String> argNames = new ArrayList<String>();
-	private ArrayList<Operation> steps = new ArrayList<Operation>();
+	private ArrayList<Object> steps = new ArrayList<Object>();
 	
 	private String funcName;
 	
@@ -33,8 +33,7 @@ public class MuaFunction extends Operation {
 	public void setSteps(Object steps) throws MuaException {
 		Iterator<Object> iter = toList(steps).iterator();
 		while(iter.hasNext()) {
-			Operation op = (Operation)iter.next();
-			this.steps.add(op);
+			this.steps.add(iter.next());
 		}
 	}
 	
@@ -53,26 +52,10 @@ public class MuaFunction extends Operation {
 		for(int i=0; i<getRequiredArgNum(); i++) {
 			namespace.bind(argNames.get(i), getArgValueAt(i));
 		}
-		Object ret = execSteps();
+		Object ret = execList(steps);
 		namespace.exitCurrentScope();
 		
 		return ret;
 	}
-
-	private Object execSteps() throws MuaException {
-		
-		Object ret = null;
-		Iterator<Operation> iter = steps.iterator();
-		while(iter.hasNext()) {
-			Operation op = iter.next();
-			Object res = op.execute();
-			if(op instanceof MuaOutput) {
-				ret = res;
-			} else if(op instanceof MuaStop) {
-				break;
-			}
-		}
-		return ret;
-	}
-
+	
 }

@@ -186,12 +186,12 @@ public class Parser{
 				}
 				
 				if(func != null)
-					opStack.push(func);
+					opStack.push((Operation)Operation.clone(func));
 				else
 					throw new MuaException.OpNotSupport();
 				
 			} else if(obj instanceof Operation) {
-				opStack.push((Operation)obj);
+				opStack.push((Operation)Operation.clone(obj));
 			} else if(inProcess()) {
 				addArgToTop(obj);
 			} else {

@@ -1,10 +1,9 @@
 package src.mua.operation;
 
 import src.mua.exception.MuaException;
-import src.mua.namespace.Namespace;
 
 @SuppressWarnings("serial")
-public class MuaOutput extends Operation {
+public class MuaRandom extends Operation {
 
 	@Override
 	public int getRequiredArgNum() {
@@ -13,9 +12,11 @@ public class MuaOutput extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object ret = getArgValueAt(0);
-		Namespace.getInstance().setOutput(ret);
-		return ret;
+		double num = toDouble(getArgValueAt(0));
+		if(num < 0)
+			throw new MuaException.Random();
+		
+		return Math.random() * num;
 	}
 
 }

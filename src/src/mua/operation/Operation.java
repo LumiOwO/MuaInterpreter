@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
+import src.mua.parser.Parser;
 
 @SuppressWarnings("serial")
 public abstract class Operation implements Serializable{
@@ -158,22 +160,43 @@ public abstract class Operation implements Serializable{
 		return ret;
 	}
 	
-	public static Operation clone(Operation op) {
+	public static Object clone(Object obj) {
 		
-		Operation ret = null;
+		Object ret = null;
 		try {
 			ByteArrayOutputStream out_byte = new ByteArrayOutputStream();
 			ObjectOutputStream out_obj = new ObjectOutputStream(out_byte);
-			out_obj.writeObject(op);
+			out_obj.writeObject(obj);
  
 			ByteArrayInputStream in_byte = new ByteArrayInputStream(out_byte.toByteArray());
 			ObjectInputStream in_obj = new ObjectInputStream(in_byte);
-			ret = (Operation) in_obj.readObject();
+			ret = in_obj.readObject();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		};
+		}
 		
+		return ret;
+	}
+	
+	public static Object execList(ArrayList<Object> list) throws MuaException {
+		
+		ArrayList<Object> compactedlist = new Parser().compactList(list);
+		if(!allOp(compactedlist))
+			throw new MuaException.ListExecute();
+		
+		Iterator<Object> iter = compactedlist.iterator();
+		while(iter.hasNext()) {
+			Operation op = (Operation)iter.next();
+			if(op instanceof MuaStop) {
+				break;
+			}
+			op.execute();
+		}
+		
+		Namespace namespace = Namespace.getInstance();
+		Object ret = namespace.getOutput();
+		namespace.setOutput(null);
 		return ret;
 	}
 }

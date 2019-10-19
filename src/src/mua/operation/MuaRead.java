@@ -17,7 +17,6 @@ public class MuaRead extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		@SuppressWarnings("resource")
 		Scanner in = Main.std_in;
 		
 		if(in.hasNext())

@@ -62,6 +62,27 @@ public class OpFactory {
 		else if(name.equals("if"))
 			op = new MuaIf();
 		
+		else if(name.equals("readlist"))
+			op = new MuaReadList();
+		else if(name.equals("random"))
+			op = new MuaRandom();
+		else if(name.equals("sqrt"))
+			op = new MuaSqrt();
+		else if(name.equals("int"))
+			op = new MuaInt();
+		
+		else if(name.equals("isnumber"))
+			op = new MuaIsNumber();
+		else if(name.equals("isword"))
+			op = new MuaIsWord();
+		else if(name.equals("islist"))
+			op = new MuaIsList();
+		else if(name.equals("isbool"))
+			op = new MuaIsBool();
+		else if(name.equals("isempty"))
+			op = new MuaIsEmpty();
+		
+		
 		else if(name.equals("quit"))
 			op = new MuaQuit();
 		

@@ -28,6 +28,14 @@ public class Namespace {
 		}
 		return instance;
 	}
+	
+	public Object getOutput() {
+		return curScope.getOutput();
+	}
+
+	public void setOutput(Object output) {
+		curScope.setOutput(output);
+	}
 
 	public void bind(String name, ArrayList<Object> list){
 		curScope.bind(name, list);

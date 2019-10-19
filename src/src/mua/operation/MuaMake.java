@@ -49,7 +49,6 @@ public class MuaMake extends Operation {
 	}
 	
 	private void bindFunction(String name, ArrayList<Object> list) {
-		
 		Namespace.getInstance().bind(name, list);	
 	}
 
@@ -100,7 +99,6 @@ public class MuaMake extends Operation {
 				else {
 					String funcName = toString(getArgValueAt(0));
 					steps = new Parser().compactList(steps, funcName, argNames);
-					list.set(1, steps);
 					
 					ret = allOp(steps);
 				}

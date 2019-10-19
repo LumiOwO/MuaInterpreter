@@ -205,13 +205,29 @@ public abstract class MuaException extends Exception {
 		
 	}
 	
-	public static final class ListNotFullOp extends MuaException {
+	public static final class ListExecute extends MuaException {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getErrorInfo() {
-			return "The list to execute is not full of operations.";
+			return "Raw value cannot be a member in the executing list.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class Random extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The bound for random number must be positive.";
 		}
 
 		@Override

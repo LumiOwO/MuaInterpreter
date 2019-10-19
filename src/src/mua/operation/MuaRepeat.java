@@ -1,10 +1,8 @@
 package src.mua.operation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import src.mua.exception.MuaException;
-import src.mua.parser.Parser;
 
 @SuppressWarnings("serial")
 public class MuaRepeat extends Operation {
@@ -21,21 +19,13 @@ public class MuaRepeat extends Operation {
 		if(num % 1 != 0)
 			throw new MuaException.RepeatTimes();
 		
-		list = new Parser().compactList(list);
-		if(!allOp(list))
-			throw new MuaException.ListNotFullOp();
-		
 		int times = (int)num;
-		Iterator<Object> iter;
+		Object ret = null;
 		for(int i=0; i<times; i++) {
-			iter = list.iterator();
-			while(iter.hasNext()) {
-				Operation op = Operation.clone((Operation)iter.next());
-				op.execute();
-			}
+			ret = execList(list);
 		}
 		
-		return null;
+		return ret;
 	}
 
 }
