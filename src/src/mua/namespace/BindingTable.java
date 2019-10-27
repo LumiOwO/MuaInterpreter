@@ -49,9 +49,7 @@ public class BindingTable {
 		
 		MuaFunction ret = null;
 		if(list != null) {
-			ret = new MuaFunction(name);
-			ret.setArgsName(list.get(0));
-			ret.setSteps(list.get(1));
+			ret = new MuaFunction(list.get(0), list.get(1));
 		}
 		
 		return ret;

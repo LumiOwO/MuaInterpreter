@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
 public class MuaRepeat extends Operation {
 
 	@Override

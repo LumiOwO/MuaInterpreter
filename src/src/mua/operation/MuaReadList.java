@@ -7,7 +7,6 @@ import java.util.Scanner;
 import src.mua.Main;
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
 public class MuaReadList extends Operation {
 
 	@Override

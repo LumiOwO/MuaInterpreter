@@ -2,7 +2,6 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
 public class MuaQuit extends Operation {
 
 	@Override

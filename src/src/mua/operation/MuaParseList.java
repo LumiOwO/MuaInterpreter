@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
 public class MuaParseList extends Operation {
 
 	// use for parse list
@@ -24,14 +23,9 @@ public class MuaParseList extends Operation {
 		
 		return res;
 	}
-	
-	@Override
-	public Object execute() throws MuaException {
-		return this.exec_leaf();
-	}
 
-	public void setListFull(boolean oneMore) {
-		requiredArgNum = oneMore? getNowArgNum() + 1: getNowArgNum();
+	public void setListFull() {
+		requiredArgNum = getNowArgNum();
 	}
 
 }

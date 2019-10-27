@@ -3,7 +3,6 @@ package src.mua.operation;
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 
-@SuppressWarnings("serial")
 public class MuaOutput extends Operation {
 
 	@Override

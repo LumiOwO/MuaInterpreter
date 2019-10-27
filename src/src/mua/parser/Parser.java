@@ -4,14 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Scanner;
 import java.util.Stack;
 
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
-import src.mua.operation.MuaFunction;
 import src.mua.operation.MuaParseList;
+import src.mua.operation.MuaStop;
 import src.mua.operation.OpFactory;
 import src.mua.operation.Operation;
 
@@ -22,6 +21,8 @@ public class Parser{
 	
 	private Stack<Operation> opStack = new Stack<Operation>();
 	
+	private boolean defaultOP = true;
+	
 	public void parseLine(String line) throws MuaException {
 		
 		String uncomment = line.split("//")[0];
@@ -30,23 +31,24 @@ public class Parser{
 		
 		while(scanner.hasNext()) {
 			parseString(scanner.next());
-			
-			while(inProcess() && opStack.peek().fullOfArgs()) {
-				
-				Operation op = opStack.pop();
-				
-				if(op instanceof MuaParseList) {
-					addArgToTop(op.execute());
-				} else if(inProcess()) {
-					addArgToTop(op);
-				} else {
-					Object res = op.execute();
-					if(res != null) {
-						addArgToTop(res);
-					}
+			popStack();
+		}
+	}
+
+	private void popStack() throws MuaException {
+		
+		while(inProcess() && opStack.peek().fullOfArgs()) {
+			Operation op = opStack.pop();
+			if(inProcess()) {
+				addArgToTop(op);
+			} else {
+				Object res = op.execute();
+				if(defaultOP && res != null) {
+					addArgToTop(res);
 				}
 			}
 		}
+
 	}
 
 	public boolean inProcess() {
@@ -63,36 +65,53 @@ public class Parser{
 
 	private void parseString(String string) throws MuaException {
 		
-		if(string.isEmpty())
-			return;
+		int begin = -1;
+		for(int i=0; i<string.length(); i++) {
+			char now = string.charAt(i);
+			if(now == '[') {
+				if(begin >= 0) {
+					parseItem(string.substring(begin, i));
+					begin = -1;
+				}
+				// begin parse list
+				opStack.push(OpFactory.getOpByName("  parse_list  "));
+				
+			} else if(now == ']') {
+				if(begin >= 0) {
+					parseItem(string.substring(begin, i));
+					begin = -1;
+				}
+				// end parse list
+				if(isParsingList()) {
+					((MuaParseList)opStack.peek()).setListFull();
+					popStack();
+				} else {
+					throw new MuaException.ListToken();
+				}
+				
+			} else if(begin < 0) {
+				begin = i;
+			}
+		}
 		
-		char type_char = string.charAt(0);
-		if(type_char == '[')
-			parseList(string);
-		else
-			parseItem(string);
-	}
-	
-	private void parseList(String string) throws MuaException {
-		
-		opStack.push(OpFactory.getOpByName("  parse_list  "));
-		parseString(string.substring(1));
+		if(begin >= 0) {
+			parseItem(string.substring(begin));
+			begin = -1;
+		}
+			
 	}
 	
 	private void parseItem(String string) throws MuaException {
 		
-		string = chopListToken(string);
-		if(string.isEmpty())
-			return;
-		
+//		System.out.println(string);
 		char type_char = string.charAt(0);
 		if((type_char >= '0' && type_char <= '9') 
 				|| (type_char == '-'))
 			parseNumber(string);
-		else if(type_char == '\"')
-			parseWord(string);
 		else if(string.equals("true") || string.equals("false"))
 			parseBool(string);
+		else if(isParsingList() || type_char == '\"')
+			parseWord(isParsingList()? string: string.substring(1));
 		else
 			parseName(string);
 	}
@@ -105,8 +124,7 @@ public class Parser{
 
 	private void parseWord(String string) throws MuaException {
 		
-		String parsed = string.substring(1);
-		addArgToTop(parsed);
+		addArgToTop(string);
 	}
 
 	private void parseBool(String string) throws MuaException {
@@ -121,11 +139,7 @@ public class Parser{
 		if(op == null)
 			op = Namespace.getInstance().getFunction(string);
 		
-		if(isParsingList()) {
-			if(op == null) op = new MuaFunction(string);
-			addArgToTop(op);
-			
-		} else if(op != null) {
+		if(op != null) {
 			opStack.push(op);
 		} else {
 			throw new MuaException.OpNotSupport();
@@ -136,83 +150,40 @@ public class Parser{
 		return inProcess() && opStack.peek() instanceof MuaParseList;
 	}
 
-	private String chopListToken(String string) throws MuaException {
-		
-		ListIterator<Operation> iter = opStack.listIterator(opStack.size());
-		
-		int str_len = string.length();
-		int idx = str_len;
-		while(idx > 0 && string.charAt(idx - 1) == ']')
-			idx --;
-		String ret = string.substring(0, idx);
-		
-		while(idx < str_len && iter.hasPrevious()) {
-			
-			while(iter.hasPrevious()) {
-				Operation op = iter.previous();
-				if(op instanceof MuaParseList) {
-					((MuaParseList)op).setListFull(idx != 0);
-					idx ++;
-					break;
-				}
-			}
-		}
-		
-		if(idx < str_len && !iter.hasPrevious())
-			throw new MuaException.ListToken();
-		
-		return ret;
-	}
-
-	public ArrayList<Object> compactList(ArrayList<Object> list) throws MuaException {
-		return compactList(list, null, null);
-	}
-	
-	public ArrayList<Object> compactList(ArrayList<Object> list, 
-										String funcName, 
-										Object argNames) throws MuaException {
-		ArrayList<Object> ret = new ArrayList<Object>();
+	public void execList(ArrayList<Object> list) throws MuaException {
+		defaultOP = false;
 		
 		Iterator<Object> iter = list.iterator();
 		while(iter.hasNext()) {
-			Object obj = iter.next();
+			Object item = iter.next();
 			
-			if(obj instanceof MuaFunction) {
-				String name = ((MuaFunction)obj).getFuncName();
-				MuaFunction func = Namespace.getInstance().getFunction(name);
-				if(func == null && funcName != null && name.equals(funcName)) {
-					func = (MuaFunction)obj;
-					func.setArgsName(argNames);
-				}
-				
-				if(func != null)
-					opStack.push((Operation)Operation.clone(func));
+			if(item instanceof ArrayList
+					|| item instanceof Double
+					|| item instanceof Boolean) {
+				if(inProcess())
+					addArgToTop(item);
 				else
 					throw new MuaException.OpNotSupport();
 				
-			} else if(obj instanceof Operation) {
-				opStack.push((Operation)Operation.clone(obj));
-			} else if(inProcess()) {
-				addArgToTop(obj);
-			} else {
-				ret.add(obj);
-			}
-			
-			while(inProcess() && opStack.peek().fullOfArgs()) {
-				Operation op = opStack.pop();
+			} else if(item instanceof String) {
+				String string = (String)item;
+				Operation op = OpFactory.getOpByName(string);
+				if(op == null)
+					op = Namespace.getInstance().getFunction(string);
 				
-				if(inProcess()) {
-					addArgToTop(op);
+				if(op instanceof MuaStop)
+					break;
+				else if(op != null)
+					opStack.push(op);
+				else if(inProcess()) {
+					addArgToTop(string);
 				} else {
-					ret.add(op);
+					throw new MuaException.OpNotSupport();
 				}
 			}
+			
+			popStack();
 		}
-		
-		if(inProcess())
-			throw new MuaException.FuncDefine();
-		
-		return ret;
 	}
 
 }

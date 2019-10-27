@@ -2,7 +2,6 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
-@SuppressWarnings("serial")
 public class MuaEqual extends Operation {
 	
 	// eq <number|word> <number|word>

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
-import src.mua.parser.Parser;
 
-@SuppressWarnings("serial")
 public class MuaMake extends Operation {
 	
 	// make <name> <value>
@@ -17,7 +15,7 @@ public class MuaMake extends Operation {
 	}
 	
 	@Override
-	public Object execute() throws MuaException {
+	protected Object exec_leaf() throws MuaException {
 		
 		String name = toString(getArgValueAt(0));
 		Object value = getArgValueAt(1);
@@ -29,21 +27,8 @@ public class MuaMake extends Operation {
 			bindFunction(name, toList(value));
 		} else {
 //			System.out.println("name");
-			if(value instanceof ArrayList)
-				value = new Parser().compactList(toList(value));
-			
-			super.execute();
+			bindName(name, value);
 		}
-		
-		return null;
-	}
-	
-	@Override
-	protected Object exec_leaf() throws MuaException {
-		
-		String name = toString(getArgValueAt(0));
-		Object value = getArgValueAt(1);
-		bindName(name, value);
 		
 		return null;
 	}
@@ -89,20 +74,8 @@ public class MuaMake extends Operation {
 				ret = false;
 			else if(!( (list.get(0) instanceof ArrayList) && (list.get(1) instanceof ArrayList) ))
 				ret = false;
-			else {
-				ArrayList<Object> argNames = toList(list.get(0));
-				ArrayList<Object> steps = toList(list.get(1));
-				if(!allWord(argNames))
-					ret = false;
-				else if(!existOp(steps))
-					ret = false;
-				else {
-					String funcName = toString(getArgValueAt(0));
-					steps = new Parser().compactList(steps, funcName, argNames);
-					
-					ret = allOp(steps);
-				}
-			}
+			else 
+				ret = true;
 		}
 		return ret;
 	}

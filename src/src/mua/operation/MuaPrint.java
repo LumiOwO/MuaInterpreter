@@ -3,9 +3,7 @@ package src.mua.operation;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
-import src.mua.parser.Parser;
 
-@SuppressWarnings("serial")
 public class MuaPrint extends Operation {
 
 	// print <value>
@@ -43,7 +41,6 @@ public class MuaPrint extends Operation {
 	}
 	
 	private void print(ArrayList<Object> res) throws MuaException {
-		res = new Parser().compactList(res);
 		
 		System.out.print("[");
 		for(int i=0; i<res.size(); i++) {
