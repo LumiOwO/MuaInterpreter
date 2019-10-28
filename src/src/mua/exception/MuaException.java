@@ -10,6 +10,7 @@ public abstract class MuaException extends Exception {
 	public void printErrorInfo() {
 		String preFix = isFatal()? "Fatal Error: ": "Error: ";
 		System.out.println(preFix + getErrorInfo());
+//		printStackTrace();
 	}
 	
 	// instances of exception
@@ -173,13 +174,13 @@ public abstract class MuaException extends Exception {
 		
 	}
 	
-	public static final class ListToken extends MuaException {
+	public static final class BracketMismatch extends MuaException {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getErrorInfo() {
-			return "The right bracket does not match the list.";
+			return "The right bracket ] or ) does not match the list/expression.";
 		}
 
 		@Override
@@ -228,6 +229,54 @@ public abstract class MuaException extends Exception {
 		@Override
 		public String getErrorInfo() {
 			return "The bound for random number must be positive.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class TokenInExpr extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "Some characters are not supported in the expression.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class EmptyExpr extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The expression is empty.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class OperandMismatch extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "Number of operators and operands do not match.";
 		}
 
 		@Override

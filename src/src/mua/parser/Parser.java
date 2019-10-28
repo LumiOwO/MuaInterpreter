@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
+import src.mua.operation.MuaParseExpr;
 import src.mua.operation.MuaParseList;
 import src.mua.operation.MuaStop;
 import src.mua.operation.OpFactory;
@@ -48,7 +49,6 @@ public class Parser{
 				}
 			}
 		}
-
 	}
 
 	public boolean inProcess() {
@@ -62,31 +62,28 @@ public class Parser{
 			
 		opStack.peek().addArg(arg);
 	}
-
+	
 	private void parseString(String string) throws MuaException {
+		analyseListToken(string);
+	}
+
+	private void analyseListToken(String string) throws MuaException {
 		
 		int begin = -1;
 		for(int i=0; i<string.length(); i++) {
 			char now = string.charAt(i);
-			if(now == '[') {
-				if(begin >= 0) {
-					parseItem(string.substring(begin, i));
-					begin = -1;
-				}
-				// begin parse list
-				opStack.push(OpFactory.getOpByName("  parse_list  "));
+			
+			if(now == '[' || now == ']') {
+				parseList(string, begin, i);
+				begin = -1;
 				
-			} else if(now == ']') {
-				if(begin >= 0) {
-					parseItem(string.substring(begin, i));
-					begin = -1;
-				}
-				// end parse list
-				if(isParsingList()) {
+				if(now == '[') {
+					opStack.push(OpFactory.getOpByName("  parse_list  "));
+				} else if(isParsingList()) {
 					((MuaParseList)opStack.peek()).setListFull();
 					popStack();
 				} else {
-					throw new MuaException.ListToken();
+					throw new MuaException.BracketMismatch();
 				}
 				
 			} else if(begin < 0) {
@@ -94,14 +91,62 @@ public class Parser{
 			}
 		}
 		
-		if(begin >= 0) {
-			parseItem(string.substring(begin));
-			begin = -1;
-		}
-			
+		parseList(string, begin, string.length());	
 	}
 	
-	private void parseItem(String string) throws MuaException {
+	private boolean isParsingList() {
+		return inProcess() && opStack.peek() instanceof MuaParseList;
+	}
+	
+	private void parseList(String string, int begin, int end) throws MuaException {
+		if(begin < 0)
+			return;
+		else if(isParsingList())
+			parseLiteral(string.substring(begin, end));
+		else
+			analyseExprToken(string.substring(begin, end));
+	}
+
+	private void analyseExprToken(String string) throws MuaException {
+		int begin = -1;
+		for(int i=0; i<string.length(); i++) {
+			char now = string.charAt(i);
+			
+			if(now == '(' || now == ')') {
+				parseExpr(string, begin, i);
+				begin = -1;
+				
+				if(now == '(') {
+					opStack.push(OpFactory.getOpByName("  parse_expression  "));
+				} else if(isParsingExpr()) {
+					((MuaParseExpr)opStack.peek()).setExprFull();
+					popStack();
+				} else {
+					throw new MuaException.BracketMismatch();
+				}
+				
+			} else if(begin < 0) {
+				begin = i;
+			}
+		}
+		
+		parseExpr(string, begin, string.length());
+	}
+
+	private boolean isParsingExpr() {
+		return inProcess() && opStack.peek() instanceof MuaParseExpr;
+	}
+
+	private void parseExpr(String string, int begin, int end) throws MuaException {
+		if(begin < 0)
+			return;
+		else if(isParsingExpr())
+			parseWord(string.substring(begin, end));
+		else
+			parseLiteral(string.substring(begin, end));
+	}
+
+	private void parseLiteral(String string) throws MuaException {
 		
 //		System.out.println(string);
 		char type_char = string.charAt(0);
@@ -146,10 +191,6 @@ public class Parser{
 		}
 	}
 	
-	private boolean isParsingList() {
-		return inProcess() && opStack.peek() instanceof MuaParseList;
-	}
-
 	public void execList(ArrayList<Object> list) throws MuaException {
 		defaultOP = false;
 		

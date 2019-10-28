@@ -89,6 +89,8 @@ public class OpFactory {
 		// not for command line
 		else if(name.equals("  parse_list  "))
 			op = new MuaParseList();
+		else if(name.equals("  parse_expression  "))
+			op = new MuaParseExpr();
 		
 		return op;
 	}
