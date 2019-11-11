@@ -31,16 +31,15 @@ public class MuaFunction extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Namespace namespace = Namespace.getInstance();
 		
-		namespace.enterNewScope();
+		return execList(steps);
+	}
+	
+	@Override
+	protected void bindParameters() {
 		for(int i=0; i<getRequiredArgNum(); i++) {
-			namespace.bind(argNames.get(i), getArgValueAt(i));
+			Namespace.getInstance().bind(argNames.get(i), getArgValueAt(i));
 		}
-		Object ret = execList(steps);
-		namespace.exitCurrentScope();
-		
-		return ret;
 	}
 	
 }

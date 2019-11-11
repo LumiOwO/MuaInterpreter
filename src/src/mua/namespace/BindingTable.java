@@ -14,6 +14,7 @@ public class BindingTable {
 	private HashMap<String, ArrayList<Object>> funcTable = new HashMap<String, ArrayList<Object>>();
 	
 	private Object output = null;
+	private boolean stopSignal = false;
 	
 	public Object getOutput() {
 		return output;
@@ -58,6 +59,14 @@ public class BindingTable {
 	public void putAll(BindingTable table) {
 		nameTable.putAll(table.nameTable);
 		funcTable.putAll(table.funcTable);
+	}
+
+	public boolean hasStopped() {
+		return stopSignal;
+	}
+
+	public void stopFuncExec() {
+		stopSignal = true;
 	}
 	
 }

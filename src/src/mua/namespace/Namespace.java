@@ -93,8 +93,20 @@ public class Namespace {
 	}
 
 	public void export() {
-		if(curScope != global)
+		if(!inGlobal())
 			global.putAll(curScope);
+	}
+
+	public boolean hasStopped() {
+		return curScope.hasStopped();
+	}
+	
+	public void stopFuncExec() {
+		curScope.stopFuncExec();
+	}
+	
+	public boolean inGlobal() {
+		return curScope == global;
 	}
 	
 }

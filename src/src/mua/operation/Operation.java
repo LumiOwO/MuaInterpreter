@@ -47,6 +47,22 @@ public abstract class Operation {
 		return getNowArgNum() == getRequiredArgNum();
 	}
 	
+	public Object execList(ArrayList<Object> list) throws MuaException {
+
+		Namespace namespace = Namespace.getInstance();
+		
+		namespace.enterNewScope();
+		bindParameters();
+		new Parser().execList(list);
+		namespace.exitCurrentScope();
+		
+		return namespace.getOutput();
+	}
+	
+	protected void bindParameters() {
+		
+	}
+	
 	// static utilities
 	public static Boolean toBoolean(Object value) throws MuaException {
 		
@@ -125,10 +141,5 @@ public abstract class Operation {
 		
 		return res;
 	}
-	
-	public static Object execList(ArrayList<Object> list) throws MuaException {
-		
-		new Parser().execList(list);
-		return Namespace.getInstance().getOutput();
-	}
+
 }

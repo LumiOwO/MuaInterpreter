@@ -1,6 +1,7 @@
 package src.mua.operation;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 
 public class MuaStop extends Operation {
 
@@ -11,6 +12,10 @@ public class MuaStop extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
+		Namespace namespace = Namespace.getInstance();
+		if(!namespace.inGlobal())
+			namespace.stopFuncExec();
+		
 		return null;
 	}
 

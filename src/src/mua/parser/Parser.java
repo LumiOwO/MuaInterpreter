@@ -11,7 +11,6 @@ import src.mua.exception.MuaException;
 import src.mua.namespace.Namespace;
 import src.mua.operation.MuaParseExpr;
 import src.mua.operation.MuaParseList;
-import src.mua.operation.MuaStop;
 import src.mua.operation.OpFactory;
 import src.mua.operation.Operation;
 
@@ -25,6 +24,7 @@ public class Parser{
 	private boolean defaultOP = true;
 	
 	public void parseLine(String line) throws MuaException {
+		defaultOP = true;
 		
 		String uncomment = line.split("//")[0];
 		stream = new ByteArrayInputStream(uncomment.getBytes());
@@ -102,7 +102,7 @@ public class Parser{
 		if(begin < 0)
 			return;
 		else if(isParsingList())
-			parseLiteral(string.substring(begin, end));
+			parseWord(string.substring(begin, end));
 		else
 			analyseExprToken(string.substring(begin, end));
 	}
@@ -195,32 +195,17 @@ public class Parser{
 		defaultOP = false;
 		
 		Iterator<Object> iter = list.iterator();
-		while(iter.hasNext()) {
+		while(iter.hasNext() && !Namespace.getInstance().hasStopped()) {
 			Object item = iter.next();
 			
-			if(item instanceof ArrayList
-					|| item instanceof Double
-					|| item instanceof Boolean) {
+			if(item instanceof ArrayList) {
 				if(inProcess())
 					addArgToTop(item);
 				else
 					throw new MuaException.OpNotSupport();
 				
 			} else if(item instanceof String) {
-				String string = (String)item;
-				Operation op = OpFactory.getOpByName(string);
-				if(op == null)
-					op = Namespace.getInstance().getFunction(string);
-				
-				if(op instanceof MuaStop)
-					break;
-				else if(op != null)
-					opStack.push(op);
-				else if(inProcess()) {
-					addArgToTop(string);
-				} else {
-					throw new MuaException.OpNotSupport();
-				}
+				parseString((String)item);
 			}
 			
 			popStack();
