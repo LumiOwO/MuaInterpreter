@@ -34,7 +34,13 @@ public class Namespace {
 	}
 
 	public void setOutput(Object output) {
-		curScope.setOutput(output);
+		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
+		while(iter.hasPrevious()) {
+			BindingTable scope = iter.previous();
+			scope.setOutput(output);
+			if(scope.isFunction())
+				break;
+		}
 	}
 
 	public void bind(String name, ArrayList<Object> list){
@@ -50,7 +56,6 @@ public class Namespace {
 	}
 	
 	public Object valueOfName(String name) {
-
 		Object ret = null;
 		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
 		while(ret == null && iter.hasPrevious()) {
@@ -63,7 +68,6 @@ public class Namespace {
 	}
 	
 	public MuaFunction getFunction(String name) throws MuaException {
-		
 		MuaFunction ret = null;
 		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
 		while(ret == null && iter.hasPrevious()) {
@@ -102,11 +106,23 @@ public class Namespace {
 	}
 	
 	public void stopFuncExec() {
-		curScope.stopFuncExec();
+		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
+		while(iter.hasPrevious()) {
+			BindingTable scope = iter.previous();
+			scope.stopFuncExec();
+			if(scope.isFunction())
+				break;
+		}
 	}
 	
 	public boolean inGlobal() {
 		return curScope == global;
+	}
+	
+	public void markFunc() throws MuaException {
+		if(inGlobal())
+			throw new MuaException.Unknown();
+		curScope.markFunc();
 	}
 	
 }

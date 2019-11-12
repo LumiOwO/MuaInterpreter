@@ -20,12 +20,10 @@ public class Main {
 		// main loop
 		Parser parser = new Parser();
 		while(std_in.hasNextLine()) try {
-			
 			String line = std_in.nextLine();
 			parser.parseLine(line);
 			
 		} catch (MuaException e) {
-			
 			e.printErrorInfo();
 			if(e.isFatal()) {
 				e.printStackTrace();
@@ -36,7 +34,6 @@ public class Main {
 			}
 			
 		} finally {
-			
 			prompt = parser.inProcess()? ".... ": "Mua> ";
 			if(hasPrompt) System.out.print(prompt);
 		}

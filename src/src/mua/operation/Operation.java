@@ -54,12 +54,13 @@ public abstract class Operation {
 		namespace.enterNewScope();
 		bindParameters();
 		new Parser().execList(list);
+		Object ret = namespace.getOutput();
 		namespace.exitCurrentScope();
 		
-		return namespace.getOutput();
+		return ret;
 	}
 	
-	protected void bindParameters() {
+	protected void bindParameters() throws MuaException {
 		
 	}
 	

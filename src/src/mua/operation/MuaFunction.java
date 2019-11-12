@@ -36,9 +36,12 @@ public class MuaFunction extends Operation {
 	}
 	
 	@Override
-	protected void bindParameters() {
+	protected void bindParameters() throws MuaException {
+		Namespace namespace = Namespace.getInstance();
+		namespace.markFunc();
+		
 		for(int i=0; i<getRequiredArgNum(); i++) {
-			Namespace.getInstance().bind(argNames.get(i), getArgValueAt(i));
+			namespace.bind(argNames.get(i), getArgValueAt(i));
 		}
 	}
 	

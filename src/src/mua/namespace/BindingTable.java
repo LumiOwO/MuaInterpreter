@@ -15,6 +15,7 @@ public class BindingTable {
 	
 	private Object output = null;
 	private boolean stopSignal = false;
+	private boolean isFunc = false;
 	
 	public Object getOutput() {
 		return output;
@@ -67,6 +68,14 @@ public class BindingTable {
 
 	public void stopFuncExec() {
 		stopSignal = true;
+	}
+	
+	public boolean isFunction() {
+		return isFunc;
+	}
+	
+	public void markFunc() {
+		isFunc = true;
 	}
 	
 }

@@ -155,8 +155,8 @@ public class Parser{
 			parseNumber(string);
 		else if(string.equals("true") || string.equals("false"))
 			parseBool(string);
-		else if(isParsingList() || type_char == '\"')
-			parseWord(isParsingList()? string: string.substring(1));
+		else if(type_char == '\"')
+			parseWord(string.substring(1));
 		else
 			parseName(string);
 	}
