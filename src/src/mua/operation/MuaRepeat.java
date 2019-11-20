@@ -19,12 +19,11 @@ public class MuaRepeat extends Operation {
 			throw new MuaException.RepeatTimes();
 		
 		int times = (int)num;
-		Object ret = null;
 		for(int i=0; i<times; i++) {
-			ret = execList(list);
+			execList(list);
 		}
 		
-		return ret;
+		return null;
 	}
 
 }

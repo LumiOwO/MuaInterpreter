@@ -1,7 +1,5 @@
 package src.mua.parser;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -16,7 +14,6 @@ import src.mua.operation.Operation;
 
 public class Parser{
 
-	private InputStream stream;
 	private Scanner scanner;
 	
 	private Stack<Operation> opStack = new Stack<Operation>();
@@ -27,8 +24,7 @@ public class Parser{
 		defaultOP = true;
 		
 		String uncomment = line.split("//")[0];
-		stream = new ByteArrayInputStream(uncomment.getBytes());
-		scanner = new Scanner(stream);
+		scanner = new Scanner(uncomment);
 		
 		while(scanner.hasNext()) {
 			parseString(scanner.next());

@@ -18,7 +18,8 @@ public class MuaIf extends Operation {
 		ArrayList<Object> branch_true = toList(getArgValueAt(1));
 		ArrayList<Object> branch_false = toList(getArgValueAt(2));
 		
-		return execList(cond? branch_true: branch_false);
+		execList(cond? branch_true: branch_false);
+		return null;
 	}
 
 }

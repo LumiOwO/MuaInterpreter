@@ -1,8 +1,6 @@
 package src.mua.namespace;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Stack;
 
 import src.mua.exception.MuaException;
 import src.mua.operation.MuaFunction;
@@ -14,8 +12,6 @@ public class Namespace {
 
 	// members
 	private BindingTable global = new BindingTable();
-	private Stack<BindingTable> scopeStack = new Stack<BindingTable>();
-	
 	private BindingTable curScope;
 	
 	private Namespace() {
@@ -34,13 +30,8 @@ public class Namespace {
 	}
 
 	public void setOutput(Object output) {
-		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
-		while(iter.hasPrevious()) {
-			BindingTable scope = iter.previous();
-			scope.setOutput(output);
-			if(scope.isFunction())
-				break;
-		}
+		if(!inGlobal())
+			curScope.setOutput(output);
 	}
 
 	public void bind(String name, ArrayList<Object> list){
@@ -56,25 +47,15 @@ public class Namespace {
 	}
 	
 	public Object valueOfName(String name) {
-		Object ret = null;
-		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
-		while(ret == null && iter.hasPrevious()) {
-			ret = iter.previous().valueOfName(name);
-		}
-		
-		if(ret == null)
+		Object ret = curScope.valueOfName(name);
+		if(ret == null && !inGlobal())
 			ret = global.valueOfName(name);
 		return ret;
 	}
 	
 	public MuaFunction getFunction(String name) throws MuaException {
-		MuaFunction ret = null;
-		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
-		while(ret == null && iter.hasPrevious()) {
-			ret = iter.previous().getFunction(name);
-		}
-		
-		if(ret == null)
+		MuaFunction ret = curScope.getFunction(name);
+		if(ret == null && !inGlobal())
 			ret = global.getFunction(name);
 		return ret;
 	}
@@ -83,17 +64,16 @@ public class Namespace {
 		return curScope.isName(name) || global.isName(name);
 	}
 
-	public void enterNewScope() {
-		scopeStack.push(new BindingTable());
-		curScope = scopeStack.peek();
+	public void enterScope(BindingTable scope) {
+		curScope = scope;
 	}
 
-	public void exitCurrentScope() {
-		scopeStack.pop();
-		if(scopeStack.isEmpty())
-			curScope = global;
-		else
-			curScope = scopeStack.peek();
+	public void enterGlobal() {
+		curScope = global;
+	}
+	
+	public BindingTable getCurScope() {
+		return curScope;
 	}
 
 	public void export() {
@@ -106,23 +86,12 @@ public class Namespace {
 	}
 	
 	public void stopFuncExec() {
-		ListIterator<BindingTable> iter = scopeStack.listIterator(scopeStack.size());
-		while(iter.hasPrevious()) {
-			BindingTable scope = iter.previous();
-			scope.stopFuncExec();
-			if(scope.isFunction())
-				break;
-		}
+		if(!inGlobal())
+			curScope.stopFuncExec();
 	}
 	
 	public boolean inGlobal() {
 		return curScope == global;
-	}
-	
-	public void markFunc() throws MuaException {
-		if(inGlobal())
-			throw new MuaException.Unknown();
-		curScope.markFunc();
 	}
 	
 }

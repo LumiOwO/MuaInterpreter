@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.BindingTable;
 import src.mua.namespace.Namespace;
 
 public class MuaFunction extends Operation {
@@ -32,17 +33,18 @@ public class MuaFunction extends Operation {
 	@Override
 	protected Object exec_leaf() throws MuaException {
 		
-		return execList(steps);
-	}
-	
-	@Override
-	protected void bindParameters() throws MuaException {
 		Namespace namespace = Namespace.getInstance();
-		namespace.markFunc();
 		
+		BindingTable prevScope = namespace.getCurScope();
+		namespace.enterScope(new BindingTable());
 		for(int i=0; i<getRequiredArgNum(); i++) {
 			namespace.bind(argNames.get(i), getArgValueAt(i));
 		}
+		execList(steps);
+		Object ret = namespace.getOutput();
+		namespace.enterScope(prevScope);
+		
+		return ret;
 	}
 	
 }

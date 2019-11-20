@@ -3,7 +3,6 @@ package src.mua.operation;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
-import src.mua.namespace.Namespace;
 import src.mua.parser.Parser;
 
 public abstract class Operation {
@@ -47,23 +46,10 @@ public abstract class Operation {
 		return getNowArgNum() == getRequiredArgNum();
 	}
 	
-	public Object execList(ArrayList<Object> list) throws MuaException {
-
-		Namespace namespace = Namespace.getInstance();
-		
-		namespace.enterNewScope();
-		bindParameters();
+	public void execList(ArrayList<Object> list) throws MuaException {
 		new Parser().execList(list);
-		Object ret = namespace.getOutput();
-		namespace.exitCurrentScope();
-		
-		return ret;
 	}
-	
-	protected void bindParameters() throws MuaException {
-		
-	}
-	
+
 	// static utilities
 	public static Boolean toBoolean(Object value) throws MuaException {
 		
