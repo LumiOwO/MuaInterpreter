@@ -7,12 +7,13 @@ public class MuaExport extends Operation {
 
 	@Override
 	public int getRequiredArgNum() {
-		return 0;
+		return 1;
 	}
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Namespace.getInstance().export();
+		String name = toString(getArgValueAt(0));
+		Namespace.getInstance().export(name);
 		return null;
 	}
 

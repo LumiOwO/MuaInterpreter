@@ -30,8 +30,7 @@ public class Namespace {
 	}
 
 	public void setOutput(Object output) {
-		if(!inGlobal())
-			curScope.setOutput(output);
+		curScope.setOutput(output);
 	}
 
 	public void bind(String name, ArrayList<Object> list){
@@ -76,9 +75,10 @@ public class Namespace {
 		return curScope;
 	}
 
-	public void export() {
-		if(!inGlobal())
-			global.putAll(curScope);
+	public void export(String name) {
+		if(!inGlobal() && curScope.isName(name)) {
+			global.bind(name, curScope.valueOfName(name));
+		}
 	}
 
 	public boolean hasStopped() {

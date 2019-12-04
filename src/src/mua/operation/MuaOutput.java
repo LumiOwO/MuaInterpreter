@@ -14,7 +14,7 @@ public class MuaOutput extends Operation {
 	protected Object exec_leaf() throws MuaException {
 		Object ret = getArgValueAt(0);
 		Namespace.getInstance().setOutput(ret);
-		return ret;
+		return null;
 	}
 
 }

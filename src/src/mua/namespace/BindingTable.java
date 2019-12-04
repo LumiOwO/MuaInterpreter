@@ -56,11 +56,6 @@ public class BindingTable {
 		return ret;
 	}
 
-	public void putAll(BindingTable table) {
-		nameTable.putAll(table.nameTable);
-		funcTable.putAll(table.funcTable);
-	}
-
 	public boolean hasStopped() {
 		return stopSignal;
 	}

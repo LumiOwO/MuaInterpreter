@@ -18,10 +18,10 @@ public class Parser{
 	
 	private Stack<Operation> opStack = new Stack<Operation>();
 	
-	private boolean defaultOP = true;
+	private boolean isListExecute = false;
 	
 	public void parseLine(String line) throws MuaException {
-		defaultOP = true;
+		isListExecute = false;
 		
 		String uncomment = line.split("//")[0];
 		scanner = new Scanner(uncomment);
@@ -40,7 +40,7 @@ public class Parser{
 				addArgToTop(op);
 			} else {
 				Object res = op.execute();
-				if(defaultOP && res != null) {
+				if(res != null) {
 					addArgToTop(res);
 				}
 			}
@@ -52,8 +52,13 @@ public class Parser{
 	}
 	
 	private void addArgToTop(Object arg) throws MuaException{
+//		System.out.println("arg: " + arg);
 		if(!inProcess()) {
-			opStack.push(OpFactory.getOpByName("print"));
+			if(isListExecute) {
+				opStack.push(OpFactory.getOpByName("output"));
+			} else {
+				opStack.push(OpFactory.getOpByName("print"));
+			}
 		}
 			
 		opStack.peek().addArg(arg);
@@ -188,18 +193,14 @@ public class Parser{
 	}
 	
 	public void execList(ArrayList<Object> list) throws MuaException {
-		defaultOP = false;
+		isListExecute = true;
 		
 		Iterator<Object> iter = list.iterator();
 		while(iter.hasNext() && !Namespace.getInstance().hasStopped()) {
 			Object item = iter.next();
 			
 			if(item instanceof ArrayList) {
-				if(inProcess())
-					addArgToTop(item);
-				else
-					throw new MuaException.OpNotSupport();
-				
+				addArgToTop(item);
 			} else if(item instanceof String) {
 				parseString((String)item);
 			}

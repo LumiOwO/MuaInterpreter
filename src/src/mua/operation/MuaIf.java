@@ -3,6 +3,7 @@ package src.mua.operation;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 
 public class MuaIf extends Operation {
 
@@ -19,7 +20,7 @@ public class MuaIf extends Operation {
 		ArrayList<Object> branch_false = toList(getArgValueAt(2));
 		
 		execList(cond? branch_true: branch_false);
-		return null;
+		return Namespace.getInstance().getOutput();
 	}
 
 }
