@@ -117,9 +117,6 @@ public class MuaParseExpr extends Operation{
 				break;
 		}
 		opStack.push(now);
-		
-//		if(numStack.isEmpty() && (now == '+' || now == '-'))
-//			numStack.push(0.0);
 	}
 	
 	private int priority(char op) {

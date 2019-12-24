@@ -1,4 +1,3 @@
-make "a "hello
-make "b true
 make "pi 3.14159
+make "index [[lst x] [if isempty :lst [output -1] [if eq first :lst :x [output 0] [make "i index butfirst :lst :x if eq :i -1 [output -1] [output add :i 1]]]]]
 make "run [[x] [repeat 1 :x]]
