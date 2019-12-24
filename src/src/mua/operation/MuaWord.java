@@ -1,10 +1,10 @@
 package src.mua.operation;
 
+import java.util.ArrayList;
+
 import src.mua.exception.MuaException;
 
-public class MuaEqual extends Operation {
-	
-	// eq <number|word> <number|word>
+public class MuaWord extends Operation {
 
 	@Override
 	public int getRequiredArgNum() {
@@ -13,16 +13,12 @@ public class MuaEqual extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object a = getArgValueAt(0);
+		String a = toString(getArgValueAt(0));
 		Object b = getArgValueAt(1);
+		if(b instanceof ArrayList)
+			throw new MuaException.TypeConvert();
 		
-		boolean ret;
-		try {
-			ret = compare(a, b) == 0;
-		} catch (MuaException.Compare e) {
-			ret = false;
-		}
-		return ret;
+		return a + getString(b);
 	}
 
 }

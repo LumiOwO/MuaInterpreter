@@ -1,5 +1,6 @@
 package src.mua.operation;
 
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -12,6 +13,10 @@ public class MuaParseExpr extends Operation{
 	
 	private Stack<Double> numStack;
 	private Stack<Character> opStack;
+	private ArrayList<Object> listBuf;
+	
+	private boolean isPrevOperator;
+	private int sign;
 	
 	@Override
 	public int getRequiredArgNum() {
@@ -20,17 +25,26 @@ public class MuaParseExpr extends Operation{
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
+		isPrevOperator = true;
+		sign = 1;
+		
 		numStack = new Stack<Double>();
 		opStack = new Stack<Character>();
+		listBuf = new ArrayList<Object>();
 		
 		for(int i=0; i<getRequiredArgNum(); i++) {
 			Object obj = getArgValueAt(i);
-			if(obj instanceof Double)
-				numStack.push(toDouble(obj));
-			else if(obj instanceof String)
+			if(obj instanceof Double) {
+				listBuf.add(obj);
+				isPrevOperator = false;
+			} else if(obj instanceof String) {
 				analyseToken(toString(obj));
-			else
+			} else {
 				throw new MuaException.TokenInExpr();
+			}
+		}
+		if(!listBuf.isEmpty()) {
+			pushListRes();
 		}
 		while(!opStack.isEmpty())
 			computeTop();
@@ -43,6 +57,13 @@ public class MuaParseExpr extends Operation{
 		return numStack.pop();
 	}
 
+	private void pushListRes() throws MuaException {
+		double num = toDouble(execList(listBuf)); 
+		numStack.push(num * sign);
+		sign = 1;
+		listBuf.clear();
+	}
+
 	public void setExprFull() {
 		requiredArgNum = getNowArgNum();
 	}
@@ -52,37 +73,42 @@ public class MuaParseExpr extends Operation{
 		for(int i=0; i<string.length(); i++) {
 			char now = string.charAt(i);
 			
-			if(isOperand(now)) {
+			if(!isOperator(now)) {
 				if(begin < 0) begin = i;
-			} else if(isOperator(now)) {
-				pushOperand(string, begin, i);
-				begin = -1;
-				
-				pushOperator(now);
+				isPrevOperator = false;
 			} else {
-				throw new MuaException.TokenInExpr();
+				if(isPrevOperator) {
+					if(now == '+') {
+						sign *= 1;
+					} else if(now == '-') {
+						sign *= -1;
+					} else {
+						throw new MuaException.OperandMismatch();
+					}
+				} else {
+					if(begin >= 0) {
+						listBuf.add(string.substring(begin, i));
+					}
+					begin = -1;
+					pushOperator(now);
+				}
+				
+				isPrevOperator = true;
 			}
 		}
-		pushOperand(string, begin, string.length());
+		if(begin >= 0) {
+			listBuf.add(string.substring(begin, string.length()));
+		}
 	}
 	
 	private boolean isOperator(char c) {
 		return c == '+' || c == '-' || c == '*' || c == '/' || c == '%';
 	}
 	
-	private boolean isOperand(char c) {
-		return c == '.' || (c >= '0' && c <= '9');
-	}
-	
-	private void pushOperand(String string, int begin, int end) throws MuaException {
-		if(begin < 0)
-			return;
-		else
-			numStack.push(toDouble(string.substring(begin, end)));
-	}
-
 	private void pushOperator(char now) throws MuaException {
 		
+		if(!listBuf.isEmpty())
+			pushListRes();
 		while(!opStack.isEmpty()) {
 			char prev = opStack.peek();
 			if(priority(now) <= priority(prev))
@@ -92,8 +118,8 @@ public class MuaParseExpr extends Operation{
 		}
 		opStack.push(now);
 		
-		if(numStack.isEmpty() && (now == '+' || now == '-'))
-			numStack.push(0.0);
+//		if(numStack.isEmpty() && (now == '+' || now == '-'))
+//			numStack.push(0.0);
 	}
 	
 	private int priority(char op) {

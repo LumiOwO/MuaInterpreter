@@ -3,6 +3,7 @@ package src.mua.operation;
 import java.util.ArrayList;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 import src.mua.parser.Parser;
 
 public abstract class Operation {
@@ -46,8 +47,9 @@ public abstract class Operation {
 		return getNowArgNum() == getRequiredArgNum();
 	}
 	
-	public void execList(ArrayList<Object> list) throws MuaException {
+	public Object execList(ArrayList<Object> list) throws MuaException {
 		new Parser().execList(list);
+		return Namespace.getInstance().getListRes();
 	}
 
 	// static utilities
@@ -56,6 +58,13 @@ public abstract class Operation {
 		boolean ret;
 		if(value instanceof Boolean)
 			ret = (Boolean)value;
+		else if(value instanceof String) {
+			try {
+				ret = Boolean.valueOf((String)value);
+			} catch(Exception e) {
+				throw new MuaException.TypeConvert();
+			}
+		}
 		else
 			throw new MuaException.TypeConvert();
 		
@@ -127,6 +136,41 @@ public abstract class Operation {
 			throw new MuaException.Compare();
 		
 		return res;
+	}
+	
+	public static String getString(Object obj) throws MuaException
+	{
+		StringBuffer buffer = new StringBuffer();
+		if(obj == null) {
+			buffer.append("null");
+		} else if(obj instanceof String) {
+			buffer.append(toString(obj));
+		} else if(obj instanceof Double) {
+			double value = toDouble(obj);
+			buffer.append(value);
+		} else if(obj instanceof Boolean) {
+			boolean value = toBoolean(obj);
+			buffer.append(value);
+		} else if(obj instanceof ArrayList) {
+			buffer.append(getString_List(toList(obj)));
+		}
+		
+		return buffer.toString();
+	}
+	
+	private static String getString_List(ArrayList<Object> list) throws MuaException
+	{
+		StringBuffer buffer = new StringBuffer();
+		for(int i=0; i<list.size(); i++) {
+			if(i != 0) buffer.append(" ");
+			Object obj = list.get(i);
+			boolean isList = obj instanceof ArrayList;
+			
+			if(isList) buffer.append("[");
+			buffer.append(getString(obj));
+			if(isList) buffer.append("]");
+		}
+		return buffer.toString();
 	}
 
 }

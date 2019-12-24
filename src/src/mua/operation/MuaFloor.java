@@ -2,7 +2,7 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
-public class MuaInt extends Operation {
+public class MuaFloor extends Operation {
 
 	@Override
 	public int getRequiredArgNum() {

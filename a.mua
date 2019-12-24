@@ -1,0 +1,4 @@
+make "a "hello
+make "b true
+make "pi 3.14159
+make "run [[x] [repeat 1 :x]]

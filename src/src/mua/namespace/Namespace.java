@@ -1,7 +1,5 @@
 package src.mua.namespace;
 
-import java.util.ArrayList;
-
 import src.mua.exception.MuaException;
 import src.mua.operation.MuaFunction;
 
@@ -33,10 +31,6 @@ public class Namespace {
 		curScope.setOutput(output);
 	}
 
-	public void bind(String name, ArrayList<Object> list){
-		curScope.bind(name, list);
-	}
-	
 	public void bind(String name, Object value) {
 		curScope.bind(name, value);
 	}
@@ -92,6 +86,30 @@ public class Namespace {
 	
 	public boolean inGlobal() {
 		return curScope == global;
+	}
+
+	public void setListRes(Object value) {
+		curScope.setListRes(value);
+	}
+	
+	public Object getListRes() {
+		return curScope.getListRes();
+	}
+
+	public void save(String path) throws MuaException {
+		curScope.save(path);
+	}
+	
+	public void load(String path) throws MuaException {
+		curScope.load(path);
+	}
+	
+	public void erall() {
+		curScope.erall();
+	}
+	
+	public void poall() {
+		curScope.poall();
 	}
 	
 }

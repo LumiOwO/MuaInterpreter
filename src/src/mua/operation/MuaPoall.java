@@ -1,22 +1,19 @@
 package src.mua.operation;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 
-public class MuaPrint extends Operation {
+public class MuaPoall extends Operation {
 
-	// print <value>
-	
 	@Override
 	public int getRequiredArgNum() {
-		return 1;
+		return 0;
 	}
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object value = getArgValueAt(0);
-		System.out.println(getString(value));
+		Namespace.getInstance().poall();
 		return null;
 	}
 
 }
-	

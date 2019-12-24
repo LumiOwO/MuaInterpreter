@@ -55,7 +55,7 @@ public class Parser{
 //		System.out.println("arg: " + arg);
 		if(!inProcess()) {
 			if(isListExecute) {
-				opStack.push(OpFactory.getOpByName("output"));
+				opStack.push(OpFactory.getOpByName("  list_res  "));
 			} else {
 				opStack.push(OpFactory.getOpByName("print"));
 			}
@@ -164,7 +164,7 @@ public class Parser{
 
 	private void parseNumber(String string) throws MuaException {
 		
-		double parsed = Double.valueOf(string);
+		double parsed = Operation.toDouble(string);
 		addArgToTop(parsed);
 	}
 
@@ -175,7 +175,7 @@ public class Parser{
 
 	private void parseBool(String string) throws MuaException {
 		
-		boolean parsed = Boolean.valueOf(string);
+		boolean parsed = Operation.toBoolean(string);
 		addArgToTop(parsed);
 	}
 
@@ -199,10 +199,10 @@ public class Parser{
 		while(iter.hasNext() && !Namespace.getInstance().hasStopped()) {
 			Object item = iter.next();
 			
-			if(item instanceof ArrayList) {
-				addArgToTop(item);
-			} else if(item instanceof String) {
+			if(item instanceof String) {
 				parseString((String)item);
+			} else {
+				addArgToTop(item);
 			}
 			
 			popStack();

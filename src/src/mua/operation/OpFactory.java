@@ -68,8 +68,8 @@ public class OpFactory {
 			op = new MuaRandom();
 		else if(name.equals("sqrt"))
 			op = new MuaSqrt();
-		else if(name.equals("int"))
-			op = new MuaInt();
+		else if(name.equals("floor"))
+			op = new MuaFloor();
 		
 		else if(name.equals("isnumber"))
 			op = new MuaIsNumber();
@@ -82,6 +82,34 @@ public class OpFactory {
 		else if(name.equals("isempty"))
 			op = new MuaIsEmpty();
 		
+		else if(name.equals("wait"))
+			op = new MuaWait();
+		else if(name.equals("save"))
+			op = new MuaSave();
+		else if(name.equals("load"))
+			op = new MuaLoad();
+		else if(name.equals("erall"))
+			op = new MuaErall();
+		else if(name.equals("poall"))
+			op = new MuaPoall();
+		
+		else if(name.equals("first"))
+			op = new MuaFirst();
+		else if(name.equals("last"))
+			op = new MuaLast();
+		else if(name.equals("butfirst"))
+			op = new MuaButFirst();
+		else if(name.equals("butlast"))
+			op = new MuaButLast();
+		
+		else if(name.equals("word"))
+			op = new MuaWord();
+		else if(name.equals("sentence"))
+			op = new MuaSentence();
+		else if(name.equals("list"))
+			op = new MuaList();
+		else if(name.equals("join"))
+			op = new MuaJoin();
 		
 		else if(name.equals("quit"))
 			op = new MuaQuit();
@@ -91,6 +119,8 @@ public class OpFactory {
 			op = new MuaParseList();
 		else if(name.equals("  parse_expression  "))
 			op = new MuaParseExpr();
+		else if(name.equals("  list_res  "))
+			op = new MuaListRes();
 		
 		return op;
 	}

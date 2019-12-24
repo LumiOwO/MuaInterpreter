@@ -286,4 +286,52 @@ public abstract class MuaException extends Exception {
 		
 	}
 	
+	public static final class InvalidFunc extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The format of attempted name is not valid for function.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class EmptyListWord extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "The list or word is empty.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
+	public static final class FileNotFound extends MuaException {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getErrorInfo() {
+			return "Target file is not found.";
+		}
+
+		@Override
+		public boolean isFatal() {
+			return false;
+		}
+		
+	}
+	
 }

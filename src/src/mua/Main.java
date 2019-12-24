@@ -17,8 +17,17 @@ public class Main {
 		String prompt = "Mua> ";
 		if(hasPrompt) System.out.print(prompt);
 		
-		// main loop
+		// pre-defined name
 		Parser parser = new Parser();
+		try {
+			parser.parseLine("make \"pi 3.14159");
+			parser.parseLine("make \"run [[x] [repeat 1 :x]]");
+		} catch (MuaException e) {
+			e.printStackTrace();
+		}
+		
+		// main loop
+		parser = new Parser();
 		while(std_in.hasNextLine()) try {
 			String line = std_in.nextLine();
 			parser.parseLine(line);

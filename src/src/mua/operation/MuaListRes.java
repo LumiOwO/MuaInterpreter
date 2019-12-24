@@ -1,11 +1,10 @@
 package src.mua.operation;
 
 import src.mua.exception.MuaException;
+import src.mua.namespace.Namespace;
 
-public class MuaPrint extends Operation {
+public class MuaListRes extends Operation {
 
-	// print <value>
-	
 	@Override
 	public int getRequiredArgNum() {
 		return 1;
@@ -13,10 +12,9 @@ public class MuaPrint extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object value = getArgValueAt(0);
-		System.out.println(getString(value));
+		Object ret = getArgValueAt(0);
+		Namespace.getInstance().setListRes(ret);
 		return null;
 	}
 
 }
-	

@@ -2,10 +2,8 @@ package src.mua.operation;
 
 import src.mua.exception.MuaException;
 
-public class MuaPrint extends Operation {
+public class MuaWait extends Operation {
 
-	// print <value>
-	
 	@Override
 	public int getRequiredArgNum() {
 		return 1;
@@ -13,10 +11,15 @@ public class MuaPrint extends Operation {
 
 	@Override
 	protected Object exec_leaf() throws MuaException {
-		Object value = getArgValueAt(0);
-		System.out.println(getString(value));
+		double time = toDouble(getArgValueAt(0));
+		synchronized(this) {
+			try {
+				wait((long)time);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 
 }
-	
